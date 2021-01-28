@@ -1,0 +1,249 @@
+---
+title: "Data science midterm exam"
+
+---
+
+1.Write a R code to Generate 6X6 matrix (A) using the random numbers between 1 to 100 & generate another 6x6 matrix (B) using random numbers between 500 to 600.
+```{r}
+x <- sample(1:100)
+y <- sample(500:600)
+A <- matrix(x, 6, 6)
+B <- matrix(y, 6, 6)
+
+A
+B
+
+```
+
+a.	Find the range of matrices A and B.
+```{r}
+range(A)
+range(B)
+```
+
+b.	Find the max value from each row of the matrices A and B.(using the apply function. syntax: apply(Matrix_name,margin,method). margin 1 = row, margin 2 = column)
+```{r}
+apply(A,1,max)
+apply(B,1,max)
+```
+
+c.	Find the diagonal values of matrices A&B. (find the diagonal using diag() function)
+```{r}
+diag(A)
+diag(B)
+```
+
+d.	Multiply matrices A and B
+```{r}
+A%*%B
+```
+
+e.	Replace the 4th row of Matrix A with diagonal values of matrix B
+```{r}
+A[4, ] <- diag(B)
+A
+```
+
+f.	Multiply matrices A & B and store the values on X.
+```{r}
+X <- A %*% B
+X
+```
+
+g.	Divide the matrix A with matrix B.
+```{r}
+A %*% solve(B)
+```
+
+2. Create a table using dataframe/tibble with the following categories(a to f) And input at least 10 samples(observation)
+
+a.	First name, 
+```{r}
+a <- c('Hewson', 'Hornby','Sarkisian','Melville','Hudson','Sumner','Rihanna','Lanzoni', 'Nelson','Arantes')
+```
+
+b.	Second Name, 
+```{r}
+b <- c('David','Lesley','Cherilyn','Richard','Saul','Gordon','Robyn','Fabio','Rogers','Edison')
+```
+
+c.	Age,
+```{r}
+c <- c(11,12,13,26,56,67,78,23, 45,34)
+```
+
+d.	Occupation, 
+```{r}
+d <- c('student','office','freelancer','designer','baker','engineer','farmer','student','seller','seller')
+```
+
+e.	Place,
+```{r}
+e <- c('PP','KPC','SR','BKK','TK','TTB','PS','PP','KP','TTY')
+```
+
+f.	Random numbers( between 1 to 10)
+```{r}
+f <-sample(1:10)
+table <- data.frame(First_name = a, Second_name = b, Age = c, Occupation = d, Place = e, Random_number = f)
+table
+```
+
+g.	Extract the last column (f)
+```{r}
+last_col <- table$Random_number
+last_col
+```
+
+h.	Find the sum, mean and length of the extracted column
+```{r}
+sum(last_col)
+mean(last_col)
+length(last_col)
+```
+3. Create a .txt file (Minimum : 150 words) with the latest news (In English) in cambodia from the official news agency’s website(Note: Include the reference link) and do the following
+
+a.	Read the .txt file
+```{r}
+library(tokenizers)
+newsFile <- read.delim("D:\\study\\Fourth year\\Data sciense\\News.txt")
+newsFile 
+```
+
+b.	Perform the Tokenization & count the words
+```{r}
+data <- paste0(newsFile)
+
+tokenization <- tokenize_words(data)
+tokenization
+
+count <- count_words(data)
+count
+```
+
+c.	Identify the most repeated word and replace that word with “KIT”
+```{r}
+repeated_words <- names(table(tokenization))[as.vector(table(tokenization))==max(table(tokenization))]
+repeated_words
+repeated_words_count <- max(table(tokenization))
+repeated_words_count
+
+replace <- gsub(repeated_words, "KIT", data)
+replace
+```
+
+d.	Perform the Sentiment analysis
+```{r}
+library(sentimentr)
+library(qdap)
+library(dplyr)
+library(tidytext)
+#To know number of sentences and words
+step_1 <- sentiment(replace)
+step_1
+
+#Total number of words
+step_2 <- sentiment_by(replace)
+step_2
+
+#To display the sentences
+step_3 <- get_sentences(replace)
+step_3
+
+#find emotion at the sentence level
+step_4 <- emotion(replace)
+step_4
+
+#Aggregated emotion by group
+step_5 <- emotion_by(replace)
+step_5
+
+#Find profanity at the sentence level
+step_6 <- profanity(replace)
+step_6
+
+#Aggregated profanity by group
+step_7 <- profanity_by(replace)
+step_7
+```
+
+e.	Plot the graph between “words count” and “words” using geom_col()
+e.1. X-axis title =“Number of words”, Size=10, Bold, Text in Blue color, Center, space between graph and title = 20.
+e.2. Y-axis title =“List of words”, Size=10, Bold, Text in Red color, Center, space between graph and title = 20.
+e.3. Graph title =”Text Mining using R”,Size = 25, Bold, Center, Text in Yellow color, space between graph and title = 25.
+
+```{r}
+#table setup 
+text_df <- data.frame(text = data)
+text_df
+
+library(magrittr)
+text_words <- text_df %>% unnest_tokens(output = word, input = text) 
+text_words
+
+#word count
+text_wordcounts <- text_words  %>% count(word, sort = TRUE)
+text_wordcounts
+
+#plot the data 
+library(ggplot2)
+graph <- ggplot(data = text_wordcounts, aes(word, n)) + geom_col()
+graph
+
+#e.1. X-axis title =“Number of words”, Size=10, Bold, Text in Blue color, Center, space between graph and title = 20.
+graph <- graph + xlab('Number of word') + theme(axis.title.x=element_text(size=10,color='blue', face='bold', hjust=0.5, margin=margin(r=20)))
+graph
+
+#e.2. Y-axis title =“List of words”, Size=10, Bold, Text in Red color, Center, space between graph and title = 20.
+graph <- graph + ylab('List of words')+ theme(axis.title.y=element_text(size=10,color='red', face='bold', hjust=0.5, margin=margin(r=20)))
+graph
+
+#e.3. Graph title =”Text Mining using R”,Size = 25, Bold, Center, Text in Yellow color, space between graph and title = 25.
+graph <- graph + ggtitle('Text Mining using R')+ theme(plot.title=element_text(size=25, color='yellow', face='bold', hjust=0.5, margin=margin(r=25)))
+graph
+```
+
+4. Find the assigned Dataset from the list below and perform the following
+link: Bad Drivers https://github.com/fivethirtyeight/data/blob/master/bad-drivers/bad-drivers.csv
+```{r}
+#a.	Import and Clean the dataset.
+library(tidyverse)
+# import the data from github by using the link after click the raw button
+dataset <- read_csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/bad-drivers/bad-drivers.csv")
+dataset
+#clean the dataset 
+#check if the data contain any NA value
+check <- is.na(dataset)
+check #the dataset don't have any NA value (return false for all row)
+
+#b.	Find the x and y variables(axis) from the assigned dataset and give the reason for selecting the x and y axis. 
+# choose Percentage Of Drivers Involved In Fatal Collisions Who Were Speeding as x and Percentage Of Drivers Involved In Fatal Collisions Who Were Alcohol-Impaired as y because we want to compare and show the change between those two data column
+plot <- ggplot(dataset, aes(x=`Percentage Of Drivers Involved In Fatal Collisions Who Were Speeding`, y=`Percentage Of Drivers Involved In Fatal Collisions Who Were Alcohol-Impaired`))
+plot
+
+#c.	Plot the graph using geom_col() and perform the linear model in statistics.
+plot <- plot+ geom_col()+ geom_smooth(method = lm)
+plot
+
+#d.	Perform the facet with the available columns(Choose the any two variables from the columns)
+plot <- plot+ facet_grid(`Percentage Of Drivers Involved In Fatal Collisions Who Were Not Distracted` ~ `Percentage Of Drivers Involved In Fatal Collisions Who Had Not Been Involved In Any Previous Accidents`)
+plot
+
+#e.	Use the theme layer to do the following (Note: Based on dataset, name the x and y axis & graph)
+#e.1. x-axis title =“________”, Size=10, Bold, Text in Green color, Center, space between graph and title = 20.
+plot <- plot + xlab('Who were speeding') + theme(axis.title.x=element_text(size=10,color='green', face='bold', hjust=0.5, margin=margin(r=20)))
+plot
+
+#e.2. y-axis title =“________”, Size=10, Bold, Text in Yellow color, Center, space between graph and title = 20.
+plot <- plot + ylab('Who Were Alcohol-Impaired')+ theme(axis.title.y=element_text(size=10,color='yellow', face='bold', hjust=0.5, margin=margin(r=20)))
+plot
+
+#e.3. Graph title =”_________”,Size = 25, Bold, Center, Text in Blue color, space between graph and title = 25.
+plot <- plot + ggtitle('Percentage Of Drivers Involved In Fatal Collisions')+ theme(plot.title=element_text(size=25, color='blue', face='bold', hjust=0.5, margin=margin(r=25)))
+plot
+
+#save file
+ggsave(filename="Percentage Of Drivers Involved In Fatal Collisions.png", units="cm", width=25, height=25)
+```
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

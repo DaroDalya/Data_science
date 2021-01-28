@@ -1,0 +1,195 @@
+---
+title: "Unit1_Rprogramming_Assignment"
+---
+
+1. Calculate the following 
+  a.Σ a <- 5:100 (a^4 + 5*a^3) with and without loop 
+    WITH LOOP 
+```{r}
+sum <- 0
+for (a in 5:100) {
+  sum <- sum + (a^4 + 5*a^3)
+}
+sum
+```
+   WITHOUT LOOP 
+```{r}
+b <- 5:100 
+sum(b^4 + 5*b^3)
+
+```
+
+  b. Calculate U40 which Un = Un-1 + Un-2 with U(1)=1 and U(2)=2
+```{r}
+fibonacci <- numeric(40)
+fibonacci[1] <- 1
+fibonacci[2] <- 2
+for (n in 3:40) {
+  fibonacci[n] <- fibonacci[n-1] + fibonacci[n-2]
+}
+fibonacci
+```
+
+  c. Write a program to calculate cos x, sin x(Taylor series) , Get the input(x) from the user and n=45.
+```{r}
+x <- as.numeric(readline(prompt="Enter value of x: "))
+n <- 45
+cosn <- 0
+sinn <- 0
+cosx <- 0
+sinx <- 0
+for (i in 0:n) {
+  cosn <- (-1^n) * (x^(2*n))/ factorial(2*n)
+  cosx <- cosx +  cosn
+  sinn <- -1^(n) * x^(2*n + 1)/ factorial(2 * n + 1)
+  sinx <- sinx +sinn
+}
+cosx
+sinx
+```
+  d. Create a vector of the values of e cos(x) at x = 3, 3.1, 3.2, . . . , 6.
+```{r}
+x = seq(3,6 , by=0.1)
+ecos <- c(exp(x) * cos(x))
+ecos
+```
+  
+  e. x <- 1:300. How many numbers in x are divisible by 2
+```{r}
+count <- 0
+for (x in 1:300) {
+  if(x %% 2 == 0){
+    count <- count + 1
+  }
+}
+count
+```
+
+2. Solve the following system of linear equations using Gaussian elimination (Ax=y)
+  x + 2y + 3x = 9
+  2x - y + 2z = −3
+  3x + 3y + z = 5
+```{r}
+A <- matrix(c(1, 2, 3,
+              2, -1, 2,
+              3,  3, 1), 3, 3, byrow=TRUE)
+B <- c(9, -3, 5)
+solution <- gaussianElimination(A, B)
+solution
+```
+
+3. Use outer function to create matrix
+```{r}
+x <- 0:4
+y <- 0:4
+mat <- outer(x,y, function(x,y) x+1*y)
+mat
+```
+
+4. Get the COVID-19 Dataset from the data sources. Number of observations should be more than 100.Then, report the following informations
+
+  a. Data source detail 
+  Title: COVID19 Daily Updates
+  Link: https://www.kaggle.com/gpreda/coronavirus-2019ncov
+```{r}
+c19_dataset <- read.csv("D:\\study\\Fourth year\\Data sciense\\Dataset\\archive\\covid-19-all.csv")
+c_dataset <- c19_dataset
+c_dataset
+```
+  
+  
+  b. Explain the unit & necessity of each veriable
+  _ Country/Region: Country or Region; ex: Mainland China, Romania, Italy
+  _ Province/State: Province or State; ex: Hubei
+  _ Latitude: Latitude of the Country
+  _ Longitude: Longitude of the Country
+  _ Comfirmed: Confirmed number of cases
+  _ Recovered: Number of recovered patients
+  _ Deaths: Number of deaths
+  _ Date: Date of the report
+```{r}
+colnames(c_dataset)
+```
+ 
+  c. Find the missing values(rows & columns) and replace them with mean(Tidy Dataset)
+```{r}
+# find the missing value
+is.na(c_dataset) 
+# the dataset have empty value but don't have missing value
+
+#replace the missing value 
+
+x <- c_dataset$Deaths
+x[which(is.na(x))] <- mean(x, na.rm = TRUE)
+c_dataset
+
+c_dataset[] <- lapply(c_dataset, function(x) { 
+  x[is.na(x)] <- mean(x, na.rm = TRUE)
+  x
+})
+c_dataset 
+# there is nothing to replace since the dataset don't have missing value
+```
+ 
+  
+  d. Generate the two new variables(Var1:Mean, Var2: Median from available variable)
+```{r}
+c_dataset %>% mutate(Mean=mean(Latitude),Median=median(Latitude))
+c_dataset
+```
+
+  
+  e. Rename the two existing variables 
+```{r}
+
+c_dataset %>% rename("Country/Region"=Country.Region, "Province/State"=Province.State,)
+```
+  
+  f. Create a plot using following instructions (using 7 layers of Grammar of Graphics)
+    i. Choose x and y axis(aes)
+```{r}
+# Choose Date as X and Confirmed_cases Y
+confirmed_cases <- c_dataset %>% group_by(Date) %>% count(Date, wt = Confirmed)
+Date <- confirmed_cases[['Date']]
+Confirmed <- confirmed_cases[['n']]
+confirmed_cases
+```
+  
+    ii. geom_point() - specify the parameters, size : 5, color: red, alpha: ⅕ 
+  
+```{r}
+gp = geom_point(alpha=1/5, color="red", size=5)
+gp
+plot <- ggplot(x = confirmed_cases, mapping = aes(x = Date, y = Confirmed)) + gp
+plot
+```
+
+    iii. Use Facet grid, cartesian coordinates & geom_smooth()
+```{r}
+# facet grid
+plot + facet_grid(Confirmed)
+```
+
+```{r}
+# coord_cartesian
+plot + coord_cartesian(expand = FALSE)
+```
+
+```{r}
+# geom_smooth
+plot + geom_smooth()
+```
+
+    iv. Assign the title to x, y and graph 
+
+```{r}
+plot <- plot + ggtitle("The number of confirmed cases") + xlab("Date") + ylab("Confirmed cases")
+plot
+```
+
+    v. Export the graph to your working directory with the title called “covid_19_ dataset.png”
+
+```{r}
+ggsave(filename = "D:\\study\\Fourth year\\Data sciense\\Dataset\\archive\\covid_19_positive_cases_dataset.png", units = "cm", width = 40, height = 25)
+```
+
