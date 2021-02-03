@@ -1,0 +1,166 @@
+---
+title: "EDA process"
+output: html_notebook
+---
+
+Exploratory Data Analysisv(EDA):
+1. Do manual analyzation of your data set
+2. Simplify the variable(Use short term)
+3. Reference: help(“mpg’) to know more about the process
+4. Import your dataset
+5. Clean your dataset
+6. Use str function to know about the list of variable and data type of each variables
+7. If all your variables are character, please find a way to change datatype of each variable as you want (As actual)
+8. Perform the numeric and graphical analyzation
+    8.1. Mean, Median, Mode (Central tendency)
+    8.2. Find variance and SD
+    8.3. Range and Quantile
+    8.4. Use Summary function to verify your answers
+    8.5. Filter the random samples using pipe operator
+    8.6. Try to understand the seed function
+    8.7. If your dataset’s variables are quantitative, try to plot Histogram and Box plot, Dot plot, Density plot (Using ggplot)
+    8.8. If your dataset’s variables are qualitative, try to plot Bar chart, Pie chart (Using ggplot)
+Note: Please try to use pipe operator as much as you can
+
+```{r}
+#import library 
+library(dplyr)
+library(magrittr)
+library(ggplot2)
+library(tidyverse)
+
+#import dataset 
+dataset <- read.csv("future_career_path_evaluation.csv")
+dataset
+
+
+#clean dataset (check if your dataset contain NA value)
+check <- is.na(dataset)
+check
+#the dataset is clean and don't contain any NA value
+
+#Use str function to know about the list of variable and data type of each variables
+str(dataset)
+
+#If all your variables are character, please find a way to change datatype of each variable as you want (As actual)
+#convert character to factor 
+dataset$Year <- as.factor(dataset$Year)
+dataset$Current.Preference <- as.factor(dataset$Current.Preference)
+dataset$After.Graduate <- as.factor(dataset$After.Graduate)
+dataset$Career.Path <- as.factor(dataset$Career.Path)
+dataset$Prefer.Country <- as.factor(dataset$Prefer.Country)
+dataset$Career.Type <- as.factor(dataset$Career.Type)
+str(dataset)
+
+#Perform the numeric and graphical analyzation
+#calculate mean (choose one veriable)
+x <- dataset$Academic.Rate
+x
+mean(x)
+
+#calculate median 
+median(x)
+
+#calculate mode 
+
+
+#find variance 
+var(x)
+
+#find standard derivation 
+sd(x)
+
+#find range and quantile
+# range function is used to find min and max value in numeric vector 
+# quantile function is used to create sample quantiles within a data set with probability[0, 1]. Such as first quantile is at 0.25[25%], second is at 0.50[50%], and third is at 0.75[75%].
+range(x)
+quantile(x)
+
+#summary function computes summary statistics of data and model objects
+summary(x)
+
+#Filter the random samples using pipe operator
+random_sample <- dataset %>% sample_n(50)
+random_sample
+
+#set.seed() function sets the starting number used to generate a sequence of random numbers – it ensures that you get the same result if you start with that same seed each time you run the same process
+set.seed(1)
+sample(5)
+
+set.seed(1)
+sample(5)
+
+#difference output everytime 
+sample(5)
+sample(5)
+
+#plot histogram
+histogram <- dataset %>% ggplot(aes(x=Academic.Rate)) +
+             geom_histogram(color="black", fill="gray") +
+             ggtitle("Histogram of the student academic rate") + 
+             xlab('Academy rate') +
+             ylab('Number of student') + 
+             theme(plot.title = element_text(size=15, hjust=0.5, face="bold.italic"),
+                   axis.title.x = element_text(size=10, face="bold"),
+                   axis.title.y = element_text(size=10, face="bold"))
+             
+histogram
+
+#box plot 
+box <- dataset %>% ggplot(aes(x=Batch, y=Internship.Rate)) + 
+       geom_boxplot(color="green", fill="yellow") +
+       ggtitle("Student's internship rate") + 
+       xlab('Batch') +
+       ylab('Internship rate') + 
+       theme(plot.title = element_text(size=15, hjust=0.5, face="bold.italic"),
+             axis.title.x = element_text(size=10, face="bold"),
+             axis.title.y = element_text(size=10, face="bold"))
+box
+
+#dot plot 
+dot <- dataset %>% ggplot(aes(x=Year, y=Internship.Rate)) + 
+       geom_dotplot(binaxis='y', stackdir='center',  dotsize=0.1, binwidth=1, color="darkblue", fill="lightblue") +
+       ggtitle("Student's internship rate") + 
+       xlab('Year') +
+       ylab('Internship rate') + 
+       theme(plot.title = element_text(size=15, hjust=0.5, face="bold.italic"),
+             axis.title.x = element_text(size=10, face="bold"),
+             axis.title.y = element_text(size=10, face="bold"))
+dot
+
+#Density plot
+density <- dataset %>% ggplot(aes(x=Academic.Rate)) +
+           geom_density(color="black", fill="green") +
+           ggtitle("Student academic rate") + 
+           xlab('Academy rate') +
+           theme(plot.title = element_text(size=15, hjust=0.5, face="bold.italic"),
+                 axis.title.x = element_text(size=10, face="bold"),
+                 axis.title.y = element_text(size=10, face="bold"))
+density
+
+#Bar chart 
+barchart <- dataset %>% ggplot(aes(x=Career.Path, fill=Year)) +
+           geom_bar()  +
+           ggtitle("Student career path") + 
+           xlab('Career path') +
+           theme(plot.title = element_text(size=15, hjust=0.5, face="bold.italic"),
+                 axis.title.x = element_text(size=10, face="bold"),
+                 axis.title.y = element_text(size=10, face="bold"))
+
+barchart
+
+#Pie chart
+piechart <- dataset %>% ggplot(aes(x="", y="", fill=Career.Path)) +
+           geom_bar(stat="identity", width=1) +
+           theme(axis.line = element_blank(),
+                 plot.title = element_text(size=15, hjust=0.5, face="bold.italic")) +
+           labs(x=NULL, y=NULL, title="Pie Chart career path select") + 
+           coord_polar(theta = "y", start=0)
+piechart
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

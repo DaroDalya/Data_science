@@ -211,6 +211,7 @@ library(tidyverse)
 # import the data from github by using the link after click the raw button
 dataset <- read_csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/bad-drivers/bad-drivers.csv")
 dataset
+names(dataset)
 #clean the dataset 
 #check if the data contain any NA value
 check <- is.na(dataset)
