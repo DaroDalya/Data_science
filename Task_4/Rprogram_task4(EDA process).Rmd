@@ -43,14 +43,9 @@ check
 str(dataset)
 
 #If all your variables are character, please find a way to change datatype of each variable as you want (As actual)
-#convert character to factor 
+#convert character to factor (don't need to convert datatype since our datatype is already simplify)
 dataset$Year <- as.factor(dataset$Year)
-dataset$Current.Preference <- as.factor(dataset$Current.Preference)
-dataset$After.Graduate <- as.factor(dataset$After.Graduate)
-dataset$Career.Path <- as.factor(dataset$Career.Path)
-dataset$Prefer.Country <- as.factor(dataset$Prefer.Country)
-dataset$Career.Type <- as.factor(dataset$Career.Type)
-str(dataset)
+ 
 
 #Perform the numeric and graphical analyzation
 #calculate mean (choose one veriable)
@@ -62,7 +57,8 @@ mean(x)
 median(x)
 
 #calculate mode 
-
+getMode <-names(table(x))[table(x)==max(table(x))] 
+getMode
 
 #find variance 
 var(x)
